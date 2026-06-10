@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>লেশিয়ারা উত্তর পাড়া জামে মসজিদ</title>
+    <style>
+        :root {
+            --primary-color: #1e3a1e; /* মসজিদের জন্য সুন্দর গাঢ় সবুজ */
+            --accent-color: #cda250; /* গোল্ডেন কালার */
+            --bg-color: #f4f6f4;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 500px;
+            background-color: var(--card-bg);
+            border-radius: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            border: 4px solid var(--primary-color);
+        }
+
+        /* হেডার ডিজাইন */
+        .mosque-header {
+            background-color: var(--primary-color);
+            color: white;
+            text-align: center;
+            padding: 30px 20px;
+            border-bottom: 5px solid var(--accent-color);
+        }
+
+        .mosque-header h1 {
+            font-size: 22px;
+            margin-bottom: 5px;
+        }
+
+        .mosque-header p {
+            font-size: 14px;
+            color: var(--accent-color);
+        }
+
+        /* মেইন কন্টেন্ট */
+        .content {
+            padding: 20px;
+        }
+
+        /* ফর্ম স্টাইল */
+        .section-title {
+            font-size: 18px;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 5px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .form-group input:focus {
+            border-color: var(--primary-color);
+        }
+
+        .submit-btn {
+            width: 100%;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .submit-btn:hover {
+            background-color: #2d5a2d;
+        }
+
+        /* সফলতার মেসেজ বক্স */
+        .success-message {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: bold;
+            display: none; /* শুরুতে লুকোনো থাকবে */
+            border: 1px solid #c3e6cb;
+        }
+
+        /* স্টেটমেন্ট বা টেবিল স্টাইল */
+        .statement-box {
+            margin-top: 30px;
+        }
+
+        .statement-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 13px;
+        }
+
+        .statement-table th, .statement-table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        .statement-table th {
+            background-color: #f2f2f2;
+            color: var(--primary-color);
+        }
+
+        /* প্রিন্ট করার জন্য স্পেশাল সিএসএস */
+        @media print {
+            body { background: white; }
+            .app-container { border: none; box-shadow: none; max-width: 100%; }
+            .submit-btn, .form-group, .section-title:first-of-type, form { display: none; } /* ফর্ম প্রিন্ট হবে না */
+            .statement-box { display: block; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- হেডার -->
+        <div class="mosque-header">
+            <h1>লেশিয়ারা উত্তর পাড়া জামে মসজিদ</h1>
+            <p>মসজিদ ফান্ড ও দান ম্যানেজমেন্ট সিস্টেম</p>
+        </div>
+
+        <div class="content">
+            <!-- এখানে সফলতার মেসেজ আসবে -->
+            <div class="success-message" id="msgBox">
+                ✅ তথ্য সফলভাবে জমা হয়েছে!
+            </div>
+
+            <!-- দান করার ফর্ম -->
+            <form id="donationForm" onsubmit="saveData(event)">
+                <div class="section-title">🕌 মসজিদে দান করুন</div>
+                
+                <div class="form-group">
+                    <label>দাতার নাম</label>
+                    <input type="text" id="donorName" placeholder="যেমন: মো: আব্দুর রহমান" required>
+                </div>
+
+                <div class="form-group">
+                    <label>ঠিকানা</label>
+                    <input type="text" id="donorAddress" placeholder="গ্রাম/পাড়া" required>
+                </div>
+
+                <div class="form-group">
+                    <label>মোবাইল নম্বর</label>
+                    <input type="tel" id="donorPhone" placeholder="01XXXXXXXXX" required>
+                </div>
+
+                <div class="form-group">
+                    <label>দানের পরিমাণ (টাকা)</label>
+                    <input type="number" id="donorAmount" placeholder="৳ ০.০০" required>
+                </div>
+
+                <button type="submit" class="submit-btn">দান জমা দিন</button>
+            </form>
+
+            <!-- লাইভ স্টেটমেন্ট রিপোর্ট -->
+            <div class="statement-box">
+                <div class="section-title" style="display: flex; justify-content: space-between; align-items: center;">
+                    <span>📝 সাম্প্রতিক স্টেটমেন্ট</span>
+                    <button onclick="window.print()" style="padding: 3px 8px; font-size: 11px; cursor: pointer;">🖨️ প্রিন্ট করুন</button>
+                </div>
+                
+                <table class="statement-table">
+                    <thead>
+                        <tr>
+                            <th>নাম</th>
+                            <th>মোবাইল</th>
+                            <th>ঠিকানা</th>
+                            <th>টাকা</th>
+                        </tr>
+                    </thead>
+                    <tbody id="statementTableBody">
+                        <!-- জাভাস্ক্রিপ্ট দিয়ে এখানে ডাটা এসে জমা হবে -->
+                        <tr>
+                            <td>আলমগীর হোসেন</td>
+                            <td>01711223344</td>
+                            <td>উত্তর পাড়া</td>
+                            <td>৳ ৫,০০০</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        function saveData(event) {
+            // ১. পেজ যাতে রিফ্রেশ না হয় তার ব্যবস্থা করা
+            event.preventDefault(); 
+
+            // ২. ফর্ম থেকে ডাটাগুলো জাভাস্ক্রিপ্টে নেওয়া
+            const name = document.getElementById('donorName').value;
+            const address = document.getElementById('donorAddress').value;
+            const phone = document.getElementById('donorPhone').value;
+            const amount = document.getElementById('donorAmount').value;
+
+            // ৩. নিচে স্টেটমেন্ট টেবিলের ভেতর নতুন ডাটাটি ঢুকিয়ে দেওয়া
+            const tableBody = document.getElementById('statementTableBody');
+            const newRow = `
+                <tr>
+                    <td>${name}</td>
+                    <td>${phone}</td>
+                    <td>${address}</td>
+                    <td>৳ ${amount}</td>
+                </tr>
+            `;
+            tableBody.innerHTML += newRow; // টেবিলের নিচে নতুন লাইন যোগ হবে
+
+            // ৪. "জমা হয়েছে" সবুজ মেসেজ বক্সটি স্ক্রিনে দেখানো
+            const msgBox = document.getElementById('msgBox');
+            msgBox.style.display = "block";
+
+            // ৫. ফর্মটি খালি বা রিসেট করে দেওয়া
+            document.getElementById('donationForm').reset();
+
+            // ৬. ৩ সেকেন্ড পর "জমা হয়েছে" লেখাটি আবার নিজে থেকেই অদৃশ্য হয়ে যাবে
+            setTimeout(() => {
+                msgBox.style.display = "none";
+            }, 3000);
+        }
+    </script>
+
+</body>
+</html>
