@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MonyPay - Dark & Light Mode</title>
+    <title>MonyPay - Dashboard</title>
     <style>
         /* মূল ভ্যারিয়েবলসমূহ (ডার্ক মোডের জন্য ডিফল্ট) */
         :root {
@@ -310,7 +310,6 @@
             font-weight: 600;
         }
 
-        /* ডার্ক এবং লাইট মোড অনুসারে ইনকাম কালার অ্যাডজাস্টমেন্ট */
         .income { color: #10b981; }
         [data-theme="dark"] .income { color: #00ffcc; }
         .expense { color: #ef4444; }
@@ -320,13 +319,11 @@
 
     <div class="mobile-container">
         
-        <!-- লোডিং স্ক্রিন -->
         <div class="loading-overlay" id="loadingOverlay">
             <div class="spinner"></div>
             <div class="loading-text" id="loadingText">দয়া করে অপেক্ষা করুন...</div>
         </div>
         
-        <!-- ভাষা ও থিম মেনু বার -->
         <div class="top-control-bar">
             <button class="theme-btn" id="themeBtn" onclick="toggleTheme()">☀️ Light</button>
             
@@ -336,7 +333,6 @@
             </select>
         </div>
 
-        <!-- হেডার -->
         <div class="header">
             <div class="user-info">
                 <h3 id="welcome-text">স্বাগতম 👋</h3>
@@ -345,7 +341,6 @@
             <div class="notification-icon">🔔</div>
         </div>
 
-        <!-- ব্যালেন্সカード -->
         <div class="balance-card">
             <p id="balance-label">মোট ব্যালেন্স</p>
             <h1 id="balance-amount">৳ ২৫,৭৫০.০০</h1>
@@ -355,7 +350,6 @@
             </div>
         </div>
 
-        <!-- ফিচার গ্রিড -->
         <div class="features-grid">
             <div class="feature-item" onclick="triggerLoading('send')">
                 <div class="icon-box">💸</div>
@@ -375,7 +369,6 @@
             </div>
         </div>
 
-        <!-- লেনদেন সেকশন -->
         <div class="transactions-section">
             <div class="section-title">
                 <h3 id="tx-title">সাম্প্রতিক লেনদেন</h3>
@@ -420,7 +413,7 @@
             },
             en: {
                 welcome: "Welcome 👋", balanceLabel: "Total Balance", balanceAmount: "$257.50",
-                send: "Send Money"'bkash", cashout: "Cash Out", recharge: "Recharge", bill: "Bill Pay",
+                send: "Send Money", cashout: "Cash Out", recharge: "Recharge", bill: "Bill Pay",
                 txTitle: "Recent Transactions", txViewall: "See All",
                 tx1Name: "Rokib Hasan", tx1Type: "Today • Send Money", tx1Amount: "-$50.00",
                 tx2Name: "Added from Bank", tx2Type: "Yesterday • Add Money", tx2Amount: "+$100.00",
@@ -428,21 +421,21 @@
             }
         };
 
-        // থিম পরিবর্তনের ফাংশন
+        // থিম পরিবর্তন
         function toggleTheme() {
             const currentTheme = document.documentElement.getAttribute("data-theme");
             const themeBtn = document.getElementById("themeBtn");
             
             if (currentTheme === "light") {
-                document.documentElement.removeAttribute("data-theme"); // ডার্ক মোডে ফিরবে
+                document.documentElement.removeAttribute("data-theme");
                 themeBtn.innerText = "☀️ Light";
             } else {
-                document.documentElement.setAttribute("data-theme", "light"); // লাইট মোড হবে
+                document.documentElement.setAttribute("data-theme", "light");
                 themeBtn.innerText = "🌙 Dark";
             }
         }
 
-        // ভাষা পরিবর্তনের ফাংশন
+        // ভাষা পরিবর্তন
         function changeLanguage() {
             const selectedLang = document.getElementById("langSelector").value;
             const data = translations[selectedLang];
@@ -464,19 +457,25 @@
             document.getElementById("tx2-amount").innerText = data.tx2Amount;
         }
 
-        // লোডিং ফাংশন
+        // লিংক ও লোডিং একসাথে হ্যান্ডেল করার ফাংশন
         function triggerLoading(feature) {
             const selectedLang = document.getElementById("langSelector").value;
             const overlay = document.getElementById("loadingOverlay");
             const loadText = document.getElementById("loadingText");
 
             loadText.innerText = translations[selectedLang].loading;
-            overlay.style.display = "flex";
+            overlay.style.display = "flex"; // লোডিং চালু
 
             setTimeout(() => {
-                overlay.style.display = "none";
-                alert(feature.toUpperCase() + " Feature Coming Soon!");
-            }, 1500);
+                overlay.style.display = "none"; // লোডিং বন্ধ
+                
+                // এখানে চেক করা হচ্ছে ক্যাশ আউট ক্লিক করা হয়েছে কিনা
+                if (feature === 'cashout') {
+                    window.location.href = "cashout.html"; // ক্যাশ আউট পেজে নিয়ে যাবে
+                } else {
+                    alert(feature.toUpperCase() + " Feature Coming Soon!");
+                }
+            }, 1500); // ১.৫ সেকেন্ড লোডিং দেখাবে
         }
     </script>
 </body>
