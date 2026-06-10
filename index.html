@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MonyPay - Dark & Light Mode</title>
+    <style>
+        /* মূল ভ্যারিয়েবলসমূহ (ডার্ক মোডের জন্য ডিফল্ট) */
+        :root {
+            --bg-body: #0b0e14;
+            --bg-container: #131a26;
+            --bg-bar: #1a2333;
+            --bg-card: linear-gradient(135deg, #0f172a, #1e1b4b);
+            --border-card: rgba(0, 255, 204, 0.2);
+            --text-main: #ffffff;
+            --text-sub: #8fa0bc;
+            --bg-box: #1f2b3e;
+            --bg-item: #222d42;
+            --primary: #00ffcc;
+        }
+
+        /* লাইট মোডের জন্য থিম কালার */
+        [data-theme="light"] {
+            --bg-body: #f0f2f5;
+            --bg-container: #ffffff;
+            --bg-bar: #f8f9fa;
+            --bg-card: linear-gradient(135deg, #4f46e5, #7c3aed);
+            --border-card: transparent;
+            --text-main: #1f2937;
+            --text-sub: #4b5563;
+            --bg-box: #f3f4f6;
+            --bg-item: #f9fafb;
+            --primary: #4f46e5;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .mobile-container {
+            width: 100%;
+            max-width: 390px;
+            height: 800px;
+            background-color: var(--bg-container);
+            border-radius: 40px;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border: 8px solid #222c3e;
+        }
+
+        /* লোডিং ওভারলে */
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-container);
+            opacity: 0.95;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            z-index: 999;
+            border-radius: 32px;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid var(--bg-box);
+            border-top: 5px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            margin-top: 15px;
+            font-size: 14px;
+            color: var(--primary);
+        }
+
+        /* টপ বার (ভাষা ও থিম কন্ট্রোল) */
+        .top-control-bar {
+            background-color: var(--bg-bar);
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--bg-box);
+        }
+
+        /* থিম টগল বাটন */
+        .theme-btn {
+            background-color: var(--bg-box);
+            border: 1px solid var(--primary);
+            color: var(--text-main);
+            padding: 6px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .lang-select {
+            background-color: var(--bg-box);
+            color: var(--text-main);
+            border: 1px solid var(--primary);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            outline: none;
+        }
+
+        /* হেডার */
+        .header {
+            padding: 20px 20px 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .user-info h3 {
+            font-size: 14px;
+            color: var(--text-sub);
+        }
+
+        .user-info h2 {
+            font-size: 18px;
+            color: var(--text-main);
+        }
+
+        .notification-icon {
+            background-color: var(--bg-box);
+            padding: 10px;
+            border-radius: 50%;
+            color: var(--primary);
+        }
+
+        /* ব্যালেন্স কার্ড */
+        .balance-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-card);
+            margin: 20px;
+            padding: 25px;
+            border-radius: 24px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .balance-card p {
+            font-size: 13px;
+            color: #ffffff;
+            opacity: 0.8;
+        }
+
+        [data-theme="light"] .balance-card p {
+            color: #e0e7ff;
+        }
+
+        .balance-card h1 {
+            font-size: 32px;
+            margin: 8px 0;
+            font-weight: 700;
+            color: #00ffcc;
+        }
+
+        [data-theme="light"] .balance-card h1 {
+            color: #ffffff;
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: #ffffff;
+            opacity: 0.7;
+        }
+
+        /* ফিচার গ্রিড */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            padding: 0 20px;
+            margin-bottom: 25px;
+        }
+
+        .feature-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .icon-box {
+            background-color: var(--bg-box);
+            width: 58px;
+            height: 58px;
+            border-radius: 18px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 22px;
+            border: 1px solid transparent;
+        }
+
+        .feature-item:hover .icon-box {
+            border-color: var(--primary);
+            transform: translateY(-3px);
+        }
+
+        .feature-item span {
+            font-size: 11px;
+            color: var(--text-main);
+            margin-top: 8px;
+            text-align: center;
+        }
+
+        /* লেনদেন সেকশন */
+        .transactions-section {
+            background-color: var(--bg-bar);
+            border-top-left-radius: 30px;
+            border-top-right-radius: 30px;
+            padding: 25px 20px;
+            min-height: 400px;
+        }
+
+        .section-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-title h3 {
+            font-size: 15px;
+        }
+
+        .section-title a {
+            font-size: 12px;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .transaction-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .transaction-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px;
+            background-color: var(--bg-item);
+            border-radius: 16px;
+        }
+
+        .tx-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .tx-avatar {
+            width: 40px;
+            height: 40px;
+            background-color: var(--bg-box);
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .tx-details h4 {
+            font-size: 13px;
+        }
+
+        .tx-details p {
+            font-size: 11px;
+            color: var(--text-sub);
+        }
+
+        .tx-amount {
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        /* ডার্ক এবং লাইট মোড অনুসারে ইনকাম কালার অ্যাডজাস্টমেন্ট */
+        .income { color: #10b981; }
+        [data-theme="dark"] .income { color: #00ffcc; }
+        .expense { color: #ef4444; }
+    </style>
+</head>
+<body>
+
+    <div class="mobile-container">
+        
+        <!-- লোডিং স্ক্রিন -->
+        <div class="loading-overlay" id="loadingOverlay">
+            <div class="spinner"></div>
+            <div class="loading-text" id="loadingText">দয়া করে অপেক্ষা করুন...</div>
+        </div>
+        
+        <!-- ভাষা ও থিম মেনু বার -->
+        <div class="top-control-bar">
+            <button class="theme-btn" id="themeBtn" onclick="toggleTheme()">☀️ Light</button>
+            
+            <select class="lang-select" id="langSelector" onchange="changeLanguage()">
+                <option value="bn">বাংলা (BN)</option>
+                <option value="en">English (EN)</option>
+            </select>
+        </div>
+
+        <!-- হেডার -->
+        <div class="header">
+            <div class="user-info">
+                <h3 id="welcome-text">স্বাগতম 👋</h3>
+                <h2>MonyPay User</h2>
+            </div>
+            <div class="notification-icon">🔔</div>
+        </div>
+
+        <!-- ব্যালেন্সカード -->
+        <div class="balance-card">
+            <p id="balance-label">মোট ব্যালেন্স</p>
+            <h1 id="balance-amount">৳ ২৫,৭৫০.০০</h1>
+            <div class="card-footer">
+                <span>MonyPay Account</span>
+                <span>**** 5678</span>
+            </div>
+        </div>
+
+        <!-- ফিচার গ্রিড -->
+        <div class="features-grid">
+            <div class="feature-item" onclick="triggerLoading('send')">
+                <div class="icon-box">💸</div>
+                <span id="f-send">সেন্ড মানি</span>
+            </div>
+            <div class="feature-item" onclick="triggerLoading('cashout')">
+                <div class="icon-box">🏧</div>
+                <span id="f-cashout">ক্যাশ আউট</span>
+            </div>
+            <div class="feature-item" onclick="triggerLoading('recharge')">
+                <div class="icon-box">📱</div>
+                <span id="f-recharge">রিচার্জ</span>
+            </div>
+            <div class="feature-item" onclick="triggerLoading('bill')">
+                <div class="icon-box">🧾</div>
+                <span id="f-bill">বিল পে</span>
+            </div>
+        </div>
+
+        <!-- লেনদেন সেকশন -->
+        <div class="transactions-section">
+            <div class="section-title">
+                <h3 id="tx-title">সাম্প্রতিক লেনদেন</h3>
+                <a href="#" id="tx-viewall">সব দেখুন</a>
+            </div>
+
+            <div class="transaction-list">
+                <div class="transaction-item">
+                    <div class="tx-left">
+                        <div class="tx-avatar">RK</div>
+                        <div class="tx-details">
+                            <h4 id="tx1-name">রকিব হাসান</h4>
+                            <p id="tx1-type">আজ • সেন্ড মানি</p>
+                        </div>
+                    </div>
+                    <div class="tx-amount expense" id="tx1-amount">-৳ ৫,০০০</div>
+                </div>
+
+                <div class="transaction-item">
+                    <div class="tx-left">
+                        <div class="tx-avatar">AM</div>
+                        <div class="tx-details">
+                            <h4 id="tx2-name">ব্যাংক থেকে যুক্ত</h4>
+                            <p id="tx2-type">গতকাল • অ্যাড মানি</p>
+                        </div>
+                    </div>
+                    <div class="tx-amount income" id="tx2-amount">+৳ ১০,০০০</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const translations = {
+            bn: {
+                welcome: "স্বাগতম 👋", balanceLabel: "মোট ব্যালেন্স", balanceAmount: "৳ ২৫,৭৫০.০০",
+                send: "সেন্ড মানি", cashout: "ক্যাশ আউট", recharge: "রিচার্জ", bill: "বিল পে",
+                txTitle: "সাম্প্রতিক লেনদেন", txViewall: "সব দেখুন",
+                tx1Name: "রকিব হাসান", tx1Type: "আজ • সেন্ড মানি", tx1Amount: "-৳ ৫,০০০",
+                tx2Name: "ব্যাংক থেকে যুক্ত", tx2Type: "গতকাল • অ্যাড মানি", tx2Amount: "+৳ ১০,০০০",
+                loading: "দয়া করে অপেক্ষা করুন..."
+            },
+            en: {
+                welcome: "Welcome 👋", balanceLabel: "Total Balance", balanceAmount: "$257.50",
+                send: "Send Money"'bkash", cashout: "Cash Out", recharge: "Recharge", bill: "Bill Pay",
+                txTitle: "Recent Transactions", txViewall: "See All",
+                tx1Name: "Rokib Hasan", tx1Type: "Today • Send Money", tx1Amount: "-$50.00",
+                tx2Name: "Added from Bank", tx2Type: "Yesterday • Add Money", tx2Amount: "+$100.00",
+                loading: "Please wait..."
+            }
+        };
+
+        // থিম পরিবর্তনের ফাংশন
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute("data-theme");
+            const themeBtn = document.getElementById("themeBtn");
+            
+            if (currentTheme === "light") {
+                document.documentElement.removeAttribute("data-theme"); // ডার্ক মোডে ফিরবে
+                themeBtn.innerText = "☀️ Light";
+            } else {
+                document.documentElement.setAttribute("data-theme", "light"); // লাইট মোড হবে
+                themeBtn.innerText = "🌙 Dark";
+            }
+        }
+
+        // ভাষা পরিবর্তনের ফাংশন
+        function changeLanguage() {
+            const selectedLang = document.getElementById("langSelector").value;
+            const data = translations[selectedLang];
+
+            document.getElementById("welcome-text").innerText = data.welcome;
+            document.getElementById("balance-label").innerText = data.balanceLabel;
+            document.getElementById("balance-amount").innerText = data.balanceAmount;
+            document.getElementById("f-send").innerText = data.send;
+            document.getElementById("f-cashout").innerText = data.cashout;
+            document.getElementById("f-recharge").innerText = data.recharge;
+            document.getElementById("f-bill").innerText = data.bill;
+            document.getElementById("tx-title").innerText = data.txTitle;
+            document.getElementById("tx-viewall").innerText = data.txViewall;
+            document.getElementById("tx1-name").innerText = data.tx1Name;
+            document.getElementById("tx1-type").innerText = data.tx1Type;
+            document.getElementById("tx1-amount").innerText = data.tx1Amount;
+            document.getElementById("tx2-name").innerText = data.tx2Name;
+            document.getElementById("tx2-type").innerText = data.tx2Type;
+            document.getElementById("tx2-amount").innerText = data.tx2Amount;
+        }
+
+        // লোডিং ফাংশন
+        function triggerLoading(feature) {
+            const selectedLang = document.getElementById("langSelector").value;
+            const overlay = document.getElementById("loadingOverlay");
+            const loadText = document.getElementById("loadingText");
+
+            loadText.innerText = translations[selectedLang].loading;
+            overlay.style.display = "flex";
+
+            setTimeout(() => {
+                overlay.style.display = "none";
+                alert(feature.toUpperCase() + " Feature Coming Soon!");
+            }, 1500);
+        }
+    </script>
+</body>
+</html>
